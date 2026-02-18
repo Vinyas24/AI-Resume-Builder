@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResume } from '../context/ResumeContext';
 import ResumePreview from '../components/resume/ResumePreview';
+import ATSScore from '../components/resume/ATSScore';
 import { Plus, Trash2, ChevronDown, ChevronUp, Eye } from 'lucide-react';
 
 const inputStyle = {
@@ -342,14 +343,19 @@ const Builder = () => {
         overflowY: 'auto',
         padding: '32px',
         display: 'flex',
-        justifyContent: 'center',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}>
         <div style={{
           width: '100%',
           maxWidth: '680px',
-          boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
         }}>
-          <ResumePreview />
+          <ATSScore />
+          <div style={{
+            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+          }}>
+            <ResumePreview />
+          </div>
         </div>
       </div>
     </div>

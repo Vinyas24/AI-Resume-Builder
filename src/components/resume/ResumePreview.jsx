@@ -38,30 +38,34 @@ const ResumePreview = () => {
       boxSizing: 'border-box',
     }}>
       {/* Header */}
-      <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <h1 style={{
-          fontSize: '26px',
-          fontWeight: 700,
-          letterSpacing: '-0.5px',
-          color: '#000',
-          marginBottom: '6px',
-          fontFamily: '"Times New Roman", Times, serif',
-        }}>
-          {personal.fullName || 'Your Name'}
-        </h1>
-        {personal.jobTitle && (
-          <p style={{ fontSize: '13px', color: '#444', marginBottom: '6px' }}>
-            {personal.jobTitle}
-          </p>
-        )}
-        <div style={{ fontSize: '11px', color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '4px 12px' }}>
-          {personal.email && <span>{personal.email}</span>}
-          {personal.phone && <span>{personal.phone}</span>}
-          {personal.location && <span>{personal.location}</span>}
-          {personal.linkedin && <span>{personal.linkedin}</span>}
-          {personal.website && <span>{personal.website}</span>}
+      {(personal.fullName || personal.jobTitle || personal.email || personal.phone || personal.location || personal.linkedin || personal.website) && (
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          {personal.fullName && (
+            <h1 style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              letterSpacing: '-0.5px',
+              color: '#000',
+              marginBottom: '6px',
+              fontFamily: '"Times New Roman", Times, serif',
+            }}>
+              {personal.fullName}
+            </h1>
+          )}
+          {personal.jobTitle && (
+            <p style={{ fontSize: '14px', color: '#444', marginBottom: '8px' }}>
+              {personal.jobTitle}
+            </p>
+          )}
+          <div style={{ fontSize: '11px', color: '#555', display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '4px 12px' }}>
+            {personal.email && <span>{personal.email}</span>}
+            {personal.phone && <span>{personal.phone}</span>}
+            {personal.location && <span>{personal.location}</span>}
+            {personal.linkedin && <span>{personal.linkedin}</span>}
+            {personal.website && <span>{personal.website}</span>}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Summary */}
       {summary && (
