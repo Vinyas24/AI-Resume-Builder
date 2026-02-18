@@ -23,7 +23,6 @@ const ResumePreview = () => {
   const { resumeData, template } = useResume();
   const { personal, summary, experience, education, skills, projects } = resumeData;
 
-  const skillList = skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : [];
 
   // Template Styles
   const isClassic = template === 'classic';
@@ -175,22 +174,84 @@ const ResumePreview = () => {
       {/* Projects */}
       {projects.length > 0 && (
         <SectionWrapper title="Projects">
-          {projects.map(proj => (
-            <div key={proj.id} className="project-item" style={{ marginBottom: isMinimal ? '6px' : '10px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <strong style={{ fontSize: isMinimal ? '12px' : '13px' }}>{proj.name || 'Project'}</strong>
-                {proj.link && <span style={{ fontSize: isMinimal ? '10px' : '11px', color: '#555' }}>{proj.link}</span>}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {projects.map(proj => (
+              <div key={proj.id} className="project-item" style={{ 
+                border: isMinimal ? 'none' : '1px solid #eee',
+                padding: isMinimal ? '0' : '12px',
+                borderRadius: '4px',
+                marginBottom: isMinimal ? '8px' : '0'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <strong style={{ fontSize: isMinimal ? '12px' : '13px' }}>{proj.name || 'Project'}</strong>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      {proj.liveUrl && (
+                        <a href={proj.liveUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#111' }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
+                      )}
+                      {proj.githubUrl && (
+                        <a href={proj.githubUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#111' }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {proj.description && <p style={{ color: '#333', marginBottom: '8px' }}>{proj.description}</p>}
+                {proj.techStack && proj.techStack.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                    {proj.techStack.map((tech, i) => (
+                      <span key={i} style={{ 
+                        fontSize: '9px', 
+                        backgroundColor: '#f3f4f6', 
+                        padding: '1px 6px', 
+                        borderRadius: '2px',
+                        color: '#444',
+                        border: '1px solid #e5e7eb'
+                      }}>
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-              {proj.description && <p style={{ color: '#333' }}>{proj.description}</p>}
-            </div>
-          ))}
+            ))}
+          </div>
         </SectionWrapper>
       )}
 
       {/* Skills */}
-      {skillList.length > 0 && (
+      {(skills.technical?.length > 0 || skills.soft?.length > 0 || skills.tools?.length > 0) && (
         <SectionWrapper title="Skills">
-          <p style={{ color: '#333' }}>{skillList.join(' · ')}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {[
+              { label: 'Technical', items: skills.technical },
+              { label: 'Soft Skills', items: skills.soft },
+              { label: 'Tools', items: skills.tools },
+            ].map(cat => cat.items?.length > 0 && (
+              <div key={cat.label} style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <span style={{ fontSize: '10px', fontWeight: 700, color: '#111', textTransform: 'uppercase', minWidth: '70px' }}>
+                  {cat.label}:
+                </span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {cat.items.map((skill, i) => (
+                    <span key={i} style={{ 
+                      fontSize: '10px', 
+                      backgroundColor: '#f9fafb', 
+                      padding: '2px 8px', 
+                      borderRadius: '100px',
+                      color: '#111',
+                      border: '1px solid #eee'
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </SectionWrapper>
       )}
 

@@ -24,7 +24,11 @@ const defaultData = {
   summary: '',
   experience: [],
   education: [],
-  skills: '',
+  skills: {
+    technical: [],
+    soft: [],
+    tools: [],
+  },
   projects: [],
 };
 
@@ -33,10 +37,22 @@ const loadFromStorage = () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultData;
     const parsed = JSON.parse(raw);
+    
+    // Migration: if skills is a string, move it to technical
+    let finalSkills = parsed.skills;
+    if (typeof parsed.skills === 'string') {
+      finalSkills = {
+        technical: parsed.skills.split(',').map(s => s.trim()).filter(Boolean),
+        soft: [],
+        tools: [],
+      };
+    }
+
     return {
       ...defaultData,
       ...parsed,
       personal: { ...defaultData.personal, ...(parsed.personal || {}) },
+      skills: finalSkills || defaultData.skills,
     };
   } catch {
     return defaultData;
@@ -69,8 +85,11 @@ export const ResumeProvider = ({ children }) => {
   const updateSummary = (value) =>
     setResumeData(prev => ({ ...prev, summary: value }));
 
-  const updateSkills = (value) =>
-    setResumeData(prev => ({ ...prev, skills: value }));
+  const updateSkills = (category, value) =>
+    setResumeData(prev => ({
+      ...prev,
+      skills: { ...prev.skills, [category]: value },
+    }));
 
   // Experience
   const addExperience = () =>
@@ -108,7 +127,14 @@ export const ResumeProvider = ({ children }) => {
   const addProject = () =>
     setResumeData(prev => ({
       ...prev,
-      projects: [...prev.projects, { id: Date.now(), name: '', link: '', description: '' }],
+      projects: [...prev.projects, { 
+        id: Date.now(), 
+        name: '', 
+        description: '', 
+        techStack: [], 
+        liveUrl: '', 
+        githubUrl: '' 
+      }],
     }));
 
   const updateProject = (id, field, value) =>
@@ -157,19 +183,27 @@ export const ResumeProvider = ({ children }) => {
           description: 'Graduated Cum Laude. Minor in Graphic Design.',
         },
       ],
-      skills: 'JavaScript, React, TypeScript, Next.js, Node.js, GraphQL, TailwindCSS, Jest, Cypress, AWS',
+      skills: {
+        technical: ['JavaScript', 'React', 'TypeScript', 'Next.js', 'Node.js', 'GraphQL'],
+        soft: ['Team Leadership', 'Problem Solving', 'Communication'],
+        tools: ['Git', 'Docker', 'AWS', 'Jest', 'Cypress'],
+      },
       projects: [
         {
           id: 1,
           name: 'E-commerce Platform',
-          link: 'github.com/alex/shop',
           description: 'Full-stack e-commerce solution with Stripe integration. Processed 10k+ orders and achieved 99.9% uptime.',
+          techStack: ['React', 'Node.js', 'PostgreSQL', 'Stripe'],
+          liveUrl: 'https://shop-demo.com',
+          githubUrl: 'https://github.com/alex/shop',
         },
         {
           id: 2,
           name: 'AI Resume Builder',
-          link: 'github.com/alex/resume',
           description: 'React-based resume builder with live preview, ATS scoring, and PDF export. 500+ users in first month.',
+          techStack: ['React', 'TypeScript', 'Vite', 'Local Storage'],
+          liveUrl: 'https://ai-resume-builder.com',
+          githubUrl: 'https://github.com/alex/resume',
         },
       ],
     });

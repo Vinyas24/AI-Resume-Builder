@@ -35,17 +35,23 @@ export function computeATSScore(resumeData) {
     suggestions.push('Add at least one work experience entry.');
   }
 
-  // +10 if skills list has ≥ 8 items
-  const skillList = skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : [];
-  if (skillList.length >= 8) {
+  // +10 if skills list has ≥ 8 items (including project tech stacks)
+  const categorySkills = typeof skills === 'object'
+    ? [...(skills.technical || []), ...(skills.soft || []), ...(skills.tools || [])]
+    : (skills ? skills.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+  const projectTech = projects.flatMap(p => p.techStack || []);
+  const allSkills = [...new Set([...categorySkills, ...projectTech])];
+
+  if (allSkills.length >= 8) {
     score += 10;
   } else {
-    suggestions.push(`Add more skills — you have ${skillList.length}, target 8+.`);
+    suggestions.push(`Add more skills — you have ${allSkills.length}, target 8+.`);
   }
 
   // +10 if GitHub or LinkedIn link exists
   const hasLink = (personal.linkedin && personal.linkedin.trim()) ||
-                  (personal.website && personal.website.trim());
+    (personal.website && personal.website.trim());
   if (hasLink) {
     score += 10;
   } else {

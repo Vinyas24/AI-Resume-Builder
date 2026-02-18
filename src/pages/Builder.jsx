@@ -4,9 +4,64 @@ import { useResume } from '../context/ResumeContext';
 import ResumePreview from '../components/resume/ResumePreview';
 import ATSScore from '../components/resume/ATSScore';
 import TemplateSelector from '../components/resume/TemplateSelector';
-import { Plus, Trash2, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Eye, Sparkles, X, ExternalLink, Github, Loader2 } from 'lucide-react';
 
 const ACTION_VERBS = ['Built', 'Developed', 'Designed', 'Implemented', 'Led', 'Improved', 'Created', 'Optimized', 'Automated'];
+
+const TagInput = ({ tags = [], onAdd, onRemove, placeholder }) => {
+  const [input, setInput] = useState('');
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && input.trim()) {
+      e.preventDefault();
+      const val = input.trim();
+      
+      // Prevent duplicates
+      if (tags.some(t => t.toLowerCase() === val.toLowerCase())) {
+        setInput('');
+        return;
+      }
+
+      onAdd(val);
+      setInput('');
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+        {tags.map((tag, i) => (
+          <span key={i} style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            padding: '2px 8px',
+            borderRadius: '100px',
+            fontSize: '12px',
+            color: 'var(--color-text-primary)'
+          }}>
+            {tag}
+            <button 
+              onClick={() => onRemove(tag)}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--color-text-tertiary)' }}
+            >
+              <X size={12} />
+            </button>
+          </span>
+        ))}
+      </div>
+      <input
+        style={inputStyle}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder || "Type and press Enter..."}
+      />
+    </div>
+  );
+};
 
 const BulletGuidance = ({ text }) => {
   if (!text) return null;
@@ -122,6 +177,83 @@ const SectionHeader = ({ title, isOpen, onToggle, onAdd, addLabel }) => (
   </div>
 );
 
+const ProjectEntry = ({ proj, onUpdate, onRemove, isExpanded, onToggle, guidance }) => (
+  <div style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', marginBottom: '12px', overflow: 'hidden' }}>
+    <div 
+      onClick={onToggle}
+      style={{ 
+        padding: '12px 16px', 
+        backgroundColor: 'var(--color-surface)', 
+        cursor: 'pointer', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        borderBottom: isExpanded ? '1px solid var(--color-border)' : 'none'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        <span style={{ fontSize: '14px', fontWeight: 600 }}>{proj.name || 'Untitled Project'}</span>
+      </div>
+      <button 
+        onClick={(e) => { e.stopPropagation(); onRemove(); }} 
+        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error)' }}
+      >
+        <Trash2 size={14} />
+      </button>
+    </div>
+    
+    {isExpanded && (
+      <div style={{ padding: '16px' }}>
+        <Field label="Project Title">
+          <input style={inputStyle} value={proj.name} onChange={e => onUpdate('name', e.target.value)} placeholder="Project Name" />
+        </Field>
+        
+        <Field label="Description" guidance={
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <BulletGuidance text={proj.description} />
+            <span style={{ fontSize: '11px', color: (proj.description?.length || 0) > 200 ? 'var(--color-error)' : 'var(--color-text-tertiary)' }}>
+              {proj.description?.length || 0}/200
+            </span>
+          </div>
+        }>
+          <textarea 
+            style={textareaStyle} 
+            value={proj.description} 
+            onChange={e => onUpdate('description', e.target.value.slice(0, 200))} 
+            placeholder="Briefly describe what you built..." 
+            rows={2} 
+          />
+        </Field>
+
+        <Field label="Tech Stack">
+          <TagInput 
+            tags={proj.techStack || []} 
+            onAdd={(tag) => onUpdate('techStack', [...(proj.techStack || []), tag])}
+            onRemove={(tag) => onUpdate('techStack', (proj.techStack || []).filter(t => t !== tag))}
+            placeholder="React, Firebase..."
+          />
+        </Field>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <Field label="Live URL">
+            <div style={{ position: 'relative' }}>
+              <input style={{ ...inputStyle, paddingLeft: '32px' }} value={proj.liveUrl || ''} onChange={e => onUpdate('liveUrl', e.target.value)} placeholder="https://..." />
+              <ExternalLink size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
+            </div>
+          </Field>
+          <Field label="GitHub URL">
+            <div style={{ position: 'relative' }}>
+              <input style={{ ...inputStyle, paddingLeft: '32px' }} value={proj.githubUrl || ''} onChange={e => onUpdate('githubUrl', e.target.value)} placeholder="https://github..." />
+              <Github size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
+            </div>
+          </Field>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 const Builder = () => {
   const navigate = useNavigate();
   const {
@@ -145,9 +277,23 @@ const Builder = () => {
     links: false,
   });
 
+  const [expandedProjects, setExpandedProjects] = useState({});
+
   const toggle = (key) => setOpen(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleProject = (id) => setExpandedProjects(prev => ({ ...prev, [id]: !prev[id] }));
 
   const { personal, summary, experience, education, skills, projects } = resumeData;
+  const [isSuggesting, setIsSuggesting] = useState(false);
+
+  const handleSuggestSkills = () => {
+    setIsSuggesting(true);
+    setTimeout(() => {
+      updateSkills('technical', Array.from(new Set([...skills.technical, "TypeScript", "React", "Node.js", "PostgreSQL", "GraphQL"])));
+      updateSkills('soft', Array.from(new Set([...skills.soft, "Team Leadership", "Problem Solving"])));
+      updateSkills('tools', Array.from(new Set([...skills.tools, "Git", "Docker", "AWS"])));
+      setIsSuggesting(false);
+    }, 1000);
+  };
 
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
@@ -314,29 +460,21 @@ const Builder = () => {
         {/* Projects */}
         <SectionHeader title="Projects" isOpen={open.projects} onToggle={() => toggle('projects')} onAdd={addProject} addLabel="Add" />
         {open.projects && (
-          <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ padding: '20px' }}>
             {projects.length === 0 && (
               <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', textAlign: 'center', padding: '16px 0' }}>
                 No projects added yet.
               </p>
             )}
             {projects.map(proj => (
-              <div key={proj.id} style={{ border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '16px', position: 'relative' }}>
-                <button onClick={() => removeProject(proj.id)} style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-error)' }}>
-                  <Trash2 size={14} />
-                </button>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
-                  <Field label="Project Name">
-                    <input style={inputStyle} value={proj.name} onChange={e => updateProject(proj.id, 'name', e.target.value)} placeholder="My Project" />
-                  </Field>
-                  <Field label="Link">
-                    <input style={inputStyle} value={proj.link} onChange={e => updateProject(proj.id, 'link', e.target.value)} placeholder="github.com/you/project" />
-                  </Field>
-                </div>
-                <Field label="Description" guidance={<BulletGuidance text={proj.description} />}>
-                  <textarea style={textareaStyle} value={proj.description} onChange={e => updateProject(proj.id, 'description', e.target.value)} placeholder="What did you build and why?" rows={2} />
-                </Field>
-              </div>
+              <ProjectEntry 
+                key={proj.id} 
+                proj={proj} 
+                onUpdate={(field, val) => updateProject(proj.id, field, val)}
+                onRemove={() => removeProject(proj.id)}
+                isExpanded={!!expandedProjects[proj.id]}
+                onToggle={() => toggleProject(proj.id)}
+              />
             ))}
           </div>
         )}
@@ -344,9 +482,53 @@ const Builder = () => {
         {/* Skills */}
         <SectionHeader title="Skills" isOpen={open.skills} onToggle={() => toggle('skills')} />
         {open.skills && (
-          <div style={{ padding: '20px' }}>
-            <Field label="Skills (comma-separated)">
-              <textarea style={textareaStyle} value={skills} onChange={e => updateSkills(e.target.value)} placeholder="React, TypeScript, Node.js, Python..." rows={3} />
+          <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <button 
+              onClick={handleSuggestSkills}
+              disabled={isSuggesting}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                width: '100%',
+                padding: '10px',
+                border: '1px dashed var(--color-accent)',
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(59, 130, 246, 0.05)',
+                color: 'var(--color-accent)',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: isSuggesting ? 'not-allowed' : 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              {isSuggesting ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+              {isSuggesting ? 'Suggesting...' : '✨ Suggest Skills'}
+            </button>
+
+            <Field label={`Technical Skills (${skills.technical?.length || 0})`}>
+              <TagInput 
+                tags={skills.technical} 
+                onAdd={(tag) => updateSkills('technical', [...skills.technical, tag])} 
+                onRemove={(tag) => updateSkills('technical', skills.technical.filter(t => t !== tag))} 
+              />
+            </Field>
+
+            <Field label={`Soft Skills (${skills.soft?.length || 0})`}>
+              <TagInput 
+                tags={skills.soft} 
+                onAdd={(tag) => updateSkills('soft', [...skills.soft, tag])} 
+                onRemove={(tag) => updateSkills('soft', skills.soft.filter(t => t !== tag))} 
+              />
+            </Field>
+
+            <Field label={`Tools & Technologies (${skills.tools?.length || 0})`}>
+              <TagInput 
+                tags={skills.tools} 
+                onAdd={(tag) => updateSkills('tools', [...skills.tools, tag])} 
+                onRemove={(tag) => updateSkills('tools', skills.tools.filter(t => t !== tag))} 
+              />
             </Field>
           </div>
         )}

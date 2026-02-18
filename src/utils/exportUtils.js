@@ -51,7 +51,14 @@ export const generatePlainText = (data) => {
     if (projects && projects.length > 0) {
         text += `PROJECTS\n${'-'.repeat(8)}\n`;
         projects.forEach((proj) => {
-            text += `${proj.name}${proj.link ? ' (' + proj.link + ')' : ''}\n`;
+            text += `${proj.name}\n`;
+            if (proj.liveUrl || proj.githubUrl) {
+                const links = [proj.liveUrl, proj.githubUrl].filter(Boolean);
+                text += `${links.join(' | ')}\n`;
+            }
+            if (proj.techStack && proj.techStack.length > 0) {
+                text += `Tech: ${proj.techStack.join(', ')}\n`;
+            }
             if (proj.description) {
                 text += `${proj.description}\n`;
             }
@@ -62,7 +69,14 @@ export const generatePlainText = (data) => {
     // Skills
     if (skills) {
         text += `SKILLS\n${'-'.repeat(6)}\n`;
-        text += `${skills}\n\n`;
+        if (typeof skills === 'object') {
+            if (skills.technical?.length > 0) text += `Technical: ${skills.technical.join(', ')}\n`;
+            if (skills.soft?.length > 0) text += `Soft Skills: ${skills.soft.join(', ')}\n`;
+            if (skills.tools?.length > 0) text += `Tools: ${skills.tools.join(', ')}\n`;
+        } else {
+            text += `${skills}\n`;
+        }
+        text += `\n`;
     }
 
     return text.trim();
