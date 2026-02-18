@@ -92,3 +92,64 @@ input,
 textarea {
   font-family: inherit;
 }
+
+@media print {
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  body {
+    background-color: #FFFFFF !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  nav, 
+  button, 
+  .no-print,
+  .template-selector,
+  .back-button,
+  footer {
+    display: none !important;
+  }
+
+  /* Reset layout for print */
+  #root, .App {
+    background: white !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  .preview-container {
+    padding: 0 !important;
+    background: white !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .resume-sheet {
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    border: none !important;
+  }
+
+  /* Prevent sections from splitting across pages */
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+  }
+
+  .section-item,
+  .experience-item,
+  .education-item,
+  .project-item {
+    break-inside: avoid;
+    margin-bottom: 12pt;
+  }
+}

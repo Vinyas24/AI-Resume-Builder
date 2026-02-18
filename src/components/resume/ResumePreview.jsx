@@ -86,7 +86,7 @@ const ResumePreview = () => {
   };
 
   return (
-    <div style={containerStyle}>
+    <div className="resume-sheet" style={containerStyle}>
       {/* Header */}
       {(personal.fullName || personal.jobTitle || personal.email || personal.phone || personal.location || personal.linkedin || personal.website) && (
         <div style={headerStyle}>
@@ -142,7 +142,7 @@ const ResumePreview = () => {
       {experience.length > 0 && (
         <SectionWrapper title="Experience">
           {experience.map(exp => (
-            <div key={exp.id} style={{ marginBottom: isMinimal ? '8px' : '12px' }}>
+            <div key={exp.id} className="experience-item" style={{ marginBottom: isMinimal ? '8px' : '12px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <strong style={{ fontSize: isMinimal ? '12px' : '13px' }}>{exp.company || 'Company'}</strong>
                 <span style={{ fontSize: isMinimal ? '10px' : '11px', color: '#555' }}>{exp.date}</span>
@@ -160,7 +160,7 @@ const ResumePreview = () => {
       {education.length > 0 && (
         <SectionWrapper title="Education">
           {education.map(edu => (
-            <div key={edu.id} style={{ marginBottom: isMinimal ? '6px' : '10px' }}>
+            <div key={edu.id} className="education-item" style={{ marginBottom: isMinimal ? '6px' : '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <strong style={{ fontSize: isMinimal ? '12px' : '13px' }}>{edu.school || 'School'}</strong>
                 <span style={{ fontSize: isMinimal ? '10px' : '11px', color: '#555' }}>{edu.date}</span>
@@ -176,7 +176,7 @@ const ResumePreview = () => {
       {projects.length > 0 && (
         <SectionWrapper title="Projects">
           {projects.map(proj => (
-            <div key={proj.id} style={{ marginBottom: isMinimal ? '6px' : '10px' }}>
+            <div key={proj.id} className="project-item" style={{ marginBottom: isMinimal ? '6px' : '10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <strong style={{ fontSize: isMinimal ? '12px' : '13px' }}>{proj.name || 'Project'}</strong>
                 {proj.link && <span style={{ fontSize: isMinimal ? '10px' : '11px', color: '#555' }}>{proj.link}</span>}

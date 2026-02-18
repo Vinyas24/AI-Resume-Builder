@@ -14,7 +14,6 @@ const TemplateSelector = () => {
     <div style={{
       display: 'flex',
       gap: '8px',
-      marginBottom: '16px',
       backgroundColor: 'var(--color-surface)',
       padding: '4px',
       borderRadius: 'var(--radius-sm)',

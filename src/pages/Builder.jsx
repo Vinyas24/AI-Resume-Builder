@@ -379,7 +379,9 @@ const Builder = () => {
           width: '100%',
           maxWidth: '680px',
         }}>
-          <TemplateSelector />
+          <div style={{ marginBottom: '16px' }}>
+            <TemplateSelector />
+          </div>
           <ATSScore />
           <div style={{
             boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
