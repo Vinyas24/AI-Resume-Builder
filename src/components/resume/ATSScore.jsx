@@ -70,7 +70,7 @@ const ATSScore = () => {
         backgroundColor: 'var(--color-border)',
         borderRadius: '99px',
         overflow: 'hidden',
-        marginBottom: suggestions.length > 0 ? '16px' : '0',
+        marginBottom: '24px',
       }}>
         <div style={{
           height: '100%',
@@ -81,24 +81,53 @@ const ATSScore = () => {
         }} />
       </div>
 
-      {/* Suggestions */}
-      {suggestions.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          {suggestions.map((s, i) => (
-            <div key={i} style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '8px',
-              fontSize: '12px',
-              color: 'var(--color-text-secondary)',
-              lineHeight: 1.4,
-            }}>
-              <span style={{ color: 'var(--color-warning)', flexShrink: 0, marginTop: '1px' }}>→</span>
-              {s}
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Top 3 Improvements */}
+      <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: '16px' }}>
+        <h4 style={{
+          fontSize: '11px',
+          fontWeight: 700,
+          letterSpacing: '0.5px',
+          textTransform: 'uppercase',
+          color: 'var(--color-text-tertiary)',
+          marginBottom: '12px',
+        }}>
+          Top 3 Improvements
+        </h4>
+        {suggestions.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {suggestions.map((s, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '10px',
+                fontSize: '13px',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 1.5,
+              }}>
+                <div style={{
+                  marginTop: '4px',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-warning)',
+                  flexShrink: 0,
+                }} />
+                {s}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            fontSize: '13px',
+            color: 'var(--color-success)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <span style={{ fontSize: '16px' }}>✓</span> Your resume is in excellent shape!
+          </div>
+        )}
+      </div>
     </div>
   );
 };

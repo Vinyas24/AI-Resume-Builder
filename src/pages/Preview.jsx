@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ResumePreview from '../components/resume/ResumePreview';
+import TemplateSelector from '../components/resume/TemplateSelector';
 import { ArrowLeft } from 'lucide-react';
 
 const Preview = () => {
@@ -24,24 +25,27 @@ const Preview = () => {
         alignItems: 'center',
         marginBottom: '24px',
       }}>
-        <button
-          onClick={() => navigate('/builder')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 14px',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: 'var(--radius-sm)',
-            background: 'rgba(255,255,255,0.1)',
-            color: '#fff',
-            fontSize: '13px',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          <ArrowLeft size={14} /> Back to Builder
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button
+            onClick={() => navigate('/builder')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 14px',
+              border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'rgba(255,255,255,0.1)',
+              color: '#fff',
+              fontSize: '13px',
+              cursor: 'pointer',
+              fontWeight: 500,
+            }}
+          >
+            <ArrowLeft size={14} /> Back to Builder
+          </button>
+          <TemplateSelector />
+        </div>
         <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>
           Preview Mode — Export coming soon
         </span>

@@ -3,7 +3,35 @@ import { useNavigate } from 'react-router-dom';
 import { useResume } from '../context/ResumeContext';
 import ResumePreview from '../components/resume/ResumePreview';
 import ATSScore from '../components/resume/ATSScore';
+import TemplateSelector from '../components/resume/TemplateSelector';
 import { Plus, Trash2, ChevronDown, ChevronUp, Eye } from 'lucide-react';
+
+const ACTION_VERBS = ['Built', 'Developed', 'Designed', 'Implemented', 'Led', 'Improved', 'Created', 'Optimized', 'Automated'];
+
+const BulletGuidance = ({ text }) => {
+  if (!text) return null;
+  const lines = text.split('\n').filter(l => l.trim());
+  const suggestions = [];
+
+  lines.forEach(line => {
+    const trimmed = line.trim().replace(/^[•\-\*]\s*/, '');
+    if (!trimmed) return;
+
+    const startsWithVerb = ACTION_VERBS.some(v => trimmed.toLowerCase().startsWith(v.toLowerCase()));
+    const hasNumber = /(\d+%?|\d+k|\d+x|\bx\d+|\d+\+)/i.test(trimmed);
+
+    if (!startsWithVerb) suggestions.push('Start bullets with a strong action verb.');
+    if (!hasNumber) suggestions.push('Add measurable impact (numbers).');
+  });
+
+  const uniqueSuggestions = [...new Set(suggestions)];
+
+  return uniqueSuggestions.length > 0 ? (
+    <div style={{ marginTop: '4px', fontSize: '11px', color: 'var(--color-warning)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      {uniqueSuggestions.map((s, i) => <div key={i}>• {s}</div>)}
+    </div>
+  ) : null;
+};
 
 const inputStyle = {
   width: '100%',
@@ -35,10 +63,11 @@ const labelStyle = {
   letterSpacing: '0.5px',
 };
 
-const Field = ({ label, children }) => (
+const Field = ({ label, children, guidance }) => (
   <div style={{ marginBottom: '16px' }}>
     <label style={labelStyle}>{label}</label>
     {children}
+    {guidance}
   </div>
 );
 
@@ -241,7 +270,7 @@ const Builder = () => {
                     <input style={inputStyle} value={exp.date} onChange={e => updateExperience(exp.id, 'date', e.target.value)} placeholder="2021 - Present" />
                   </Field>
                 </div>
-                <Field label="Description">
+                <Field label="Description" guidance={<BulletGuidance text={exp.description} />}>
                   <textarea style={textareaStyle} value={exp.description} onChange={e => updateExperience(exp.id, 'description', e.target.value)} placeholder="Describe your responsibilities and achievements..." rows={3} />
                 </Field>
               </div>
@@ -304,7 +333,7 @@ const Builder = () => {
                     <input style={inputStyle} value={proj.link} onChange={e => updateProject(proj.id, 'link', e.target.value)} placeholder="github.com/you/project" />
                   </Field>
                 </div>
-                <Field label="Description">
+                <Field label="Description" guidance={<BulletGuidance text={proj.description} />}>
                   <textarea style={textareaStyle} value={proj.description} onChange={e => updateProject(proj.id, 'description', e.target.value)} placeholder="What did you build and why?" rows={2} />
                 </Field>
               </div>
@@ -350,6 +379,7 @@ const Builder = () => {
           width: '100%',
           maxWidth: '680px',
         }}>
+          <TemplateSelector />
           <ATSScore />
           <div style={{
             boxShadow: '0 4px 24px rgba(0,0,0,0.12)',

@@ -9,6 +9,7 @@ export const useResume = () => {
 };
 
 const STORAGE_KEY = 'resumeBuilderData';
+const TEMPLATE_KEY = 'resumeBuilderTemplate';
 
 const defaultData = {
   personal: {
@@ -32,7 +33,6 @@ const loadFromStorage = () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultData;
     const parsed = JSON.parse(raw);
-    // Merge with defaults to handle missing keys from older saves
     return {
       ...defaultData,
       ...parsed,
@@ -43,17 +43,25 @@ const loadFromStorage = () => {
   }
 };
 
+const loadTemplateFromStorage = () => {
+  return localStorage.getItem(TEMPLATE_KEY) || 'classic';
+};
+
 export const ResumeProvider = ({ children }) => {
   const [resumeData, setResumeData] = useState(loadFromStorage);
+  const [template, setTemplate] = useState(loadTemplateFromStorage);
 
-  // Autosave on every change
+  // Autosave data on change
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
-    } catch {
-      // Silently fail if storage is full
-    }
+    } catch {}
   }, [resumeData]);
+
+  // Persist template choice
+  useEffect(() => {
+    localStorage.setItem(TEMPLATE_KEY, template);
+  }, [template]);
 
   const updatePersonal = (field, value) =>
     setResumeData(prev => ({ ...prev, personal: { ...prev.personal, [field]: value } }));
@@ -169,6 +177,8 @@ export const ResumeProvider = ({ children }) => {
 
   const value = {
     resumeData,
+    template,
+    setTemplate,
     updatePersonal,
     updateSummary,
     updateSkills,
