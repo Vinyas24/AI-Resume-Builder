@@ -63,9 +63,16 @@ const loadTemplateFromStorage = () => {
   return localStorage.getItem(TEMPLATE_KEY) || 'classic';
 };
 
+const THEME_COLOR_KEY = 'resumeBuilderThemeColor';
+
+const loadThemeColorFromStorage = () => {
+  return localStorage.getItem(THEME_COLOR_KEY) || 'hsl(168, 60%, 40%)';
+};
+
 export const ResumeProvider = ({ children }) => {
   const [resumeData, setResumeData] = useState(loadFromStorage);
   const [template, setTemplate] = useState(loadTemplateFromStorage);
+  const [themeColor, setThemeColor] = useState(loadThemeColorFromStorage);
 
   // Autosave data on change
   useEffect(() => {
@@ -78,6 +85,11 @@ export const ResumeProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem(TEMPLATE_KEY, template);
   }, [template]);
+
+  // Persist theme color
+  useEffect(() => {
+    localStorage.setItem(THEME_COLOR_KEY, themeColor);
+  }, [themeColor]);
 
   const updatePersonal = (field, value) =>
     setResumeData(prev => ({ ...prev, personal: { ...prev.personal, [field]: value } }));
@@ -213,6 +225,8 @@ export const ResumeProvider = ({ children }) => {
     resumeData,
     template,
     setTemplate,
+    themeColor,
+    setThemeColor,
     updatePersonal,
     updateSummary,
     updateSkills,

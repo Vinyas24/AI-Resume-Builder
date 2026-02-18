@@ -9,13 +9,17 @@ import { generatePlainText, copyToClipboard } from '../utils/exportUtils';
 const Preview = () => {
   const navigate = useNavigate();
   const { resumeData } = useResume();
-  const [copied, setCopied] = useState(false);
-
   const { personal, experience, projects } = resumeData;
   const isMissingCrucialInfo = !personal.fullName || (experience.length === 0 && projects.length === 0);
+  const [copied, setCopied] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handlePrint = () => {
     window.print();
+    setTimeout(() => {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }, 500);
   };
 
   const handleCopyText = async () => {
@@ -30,7 +34,7 @@ const Preview = () => {
   return (
     <div style={{
       minHeight: 'calc(100vh - 60px)',
-      backgroundColor: '#525659',
+      backgroundColor: 'var(--color-background)',
       padding: '40px 24px',
       display: 'flex',
       flexDirection: 'column',
@@ -42,8 +46,8 @@ const Preview = () => {
         maxWidth: '820px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
-        marginBottom: '24px',
+        gap: '24px',
+        marginBottom: '32px',
       }}>
         {isMissingCrucialInfo && (
           <div style={{
@@ -67,32 +71,28 @@ const Preview = () => {
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button
-              onClick={() => navigate('/builder')}
-              className="back-button"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '0 16px',
-                height: '40px',
-                border: '1px solid rgba(255,255,255,0.2)',
-                borderRadius: 'var(--radius-sm)',
-                background: 'rgba(255,255,255,0.1)',
-                color: '#fff',
-                fontSize: '13px',
-                cursor: 'pointer',
-                fontWeight: 500,
-                boxSizing: 'border-box',
-              }}
-            >
-              <ArrowLeft size={14} /> Back to Builder
-            </button>
-            <div className="template-selector" style={{ height: '40px', display: 'flex', alignItems: 'center' }}>
-              <TemplateSelector />
-            </div>
-          </div>
+          <button
+            onClick={() => navigate('/builder')}
+            className="back-button"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '0 16px',
+              height: '40px',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'var(--color-surface)',
+              color: 'var(--color-text-primary)',
+              fontSize: '13px',
+              cursor: 'pointer',
+              fontWeight: 500,
+              boxSizing: 'border-box',
+              transition: 'all 0.2s ease'
+            }}
+          >
+            <ArrowLeft size={14} /> Back to Builder
+          </button>
 
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <button
@@ -104,9 +104,9 @@ const Preview = () => {
                 padding: '0 18px',
                 height: '40px',
                 borderRadius: 'var(--radius-sm)',
-                border: '1px solid rgba(255,255,255,0.2)',
-                background: copied ? 'var(--color-success)' : 'rgba(255,255,255,0.1)',
-                color: '#fff',
+                border: '1px solid var(--color-border)',
+                background: copied ? 'var(--color-success)' : 'var(--color-surface)',
+                color: copied ? '#fff' : 'var(--color-text-primary)',
                 fontSize: '14px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -132,7 +132,7 @@ const Preview = () => {
                 fontSize: '14px',
                 fontWeight: 600,
                 cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 boxSizing: 'border-box',
               }}
             >
@@ -141,16 +141,56 @@ const Preview = () => {
             </button>
           </div>
         </div>
+
+        <div style={{
+          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          borderRadius: '12px',
+          padding: '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+        }}>
+          <TemplateSelector />
+        </div>
       </div>
 
-      {/* Resume Sheet */}
-      <div className="preview-container" style={{
+        <div className="preview-container" style={{
         width: '100%',
         maxWidth: '760px',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.4)',
+        boxShadow: '0 12px 48px rgba(0,0,0,0.1)',
       }}>
         <ResumePreview />
       </div>
+
+      {showToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: '32px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: 'var(--color-success)',
+          color: '#fff',
+          padding: '12px 24px',
+          borderRadius: '100px',
+          fontSize: '14px',
+          fontWeight: 600,
+          boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          zIndex: 1000,
+          animation: 'slideUp 0.3s ease'
+        }}>
+          <Check size={18} strokeWidth={3} />
+          PDF export ready! Check your downloads.
+        </div>
+      )}
+
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translate(-50%, 20px); opacity: 0; }
+          to { transform: translate(-50%, 0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 };
