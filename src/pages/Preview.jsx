@@ -5,6 +5,7 @@ import TemplateSelector from '../components/resume/TemplateSelector';
 import { ArrowLeft, Printer, Copy, AlertCircle, Check } from 'lucide-react';
 import { useResume } from '../context/ResumeContext';
 import { generatePlainText, copyToClipboard } from '../utils/exportUtils';
+import ATSScore from '../components/resume/ATSScore';
 
 const Preview = () => {
   const navigate = useNavigate();
@@ -142,15 +143,37 @@ const Preview = () => {
           </div>
         </div>
 
-        <div style={{
+
+        <div className="customization-panel" style={{
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
           borderRadius: '12px',
           padding: '24px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '32px',
+          alignItems: 'start'
         }}>
-          <TemplateSelector />
+          <div style={{ flex: '1 1 300px' }}>
+            <TemplateSelector />
+          </div>
+          <div style={{ 
+            flex: '0 0 340px',
+            borderLeft: '1px solid #f1f5f9', 
+            paddingLeft: '32px',
+            minWidth: '300px'
+          }} className="ats-panel">
+            <ATSScore />
+          </div>
         </div>
+
+        <style>{`
+          @media (max-width: 768px) {
+            .customization-panel { flex-direction: column; }
+            .ats-panel { border-left: none !important; padding-left: 0 !important; width: 100% !important; flex: 1 1 auto !important; }
+          }
+        `}</style>
       </div>
 
         <div className="preview-container" style={{
